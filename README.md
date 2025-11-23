@@ -5,7 +5,7 @@ Python 기반 소켓 프로그래밍을 활용한 오목 게임. 클라이언트
 2. Installation steps : socket, threading, json 등은 Python 내장 모듈이므로 별도 설치 필요 없습니다.
 3. Startup Commands
 
-   프로젝트 폴더 내에서 powershell을 실행하여 아래 명령어를 입력합니다.
+   server.py와 client.py를 한 폴더 내에 위치 시킨 후 해당 폴더 내에서 powershell을 실행하여 아래 명령어를 입력합니다.
    
    서버 실행 명령어 - python server.py
    
@@ -67,3 +67,52 @@ parts[1]은 명령어 type뒤에 오는 인수입니다. chat message의 경우 
     
 5. Real-time Interaction & Chat
     플레이어와 관전자가 상대의 수를 실시간으로 확인할 수 있으며, 플레이어는 서로 실시간으로 채팅을 주고받을 수 있으며, 관전자는 이를 확인할 수 있습니다.
+
+## Socket Programming
+ def start_server():
+ 
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        server.bind((HOST, PORT))
+        server.listen()
+        print(f" 서버 실행 중 ({HOST}:{PORT}) ")
+        while True:
+            conn, addr = server.accept()
+            threading.Thread(target=handle_client, args=(conn, addr), daemon=True).start()
+    except Exception as e:
+        print(f"서버 오류: {e}")
+    finally:
+        server.close()
+      
+
+AF_INET->IPv4 사용
+
+socket.SOCK_STREAM->TCP 사용
+
+server.bind->bind 후에
+
+server.listen->접속대기
+
+server.accept->접속 승인
+
+threading.Thread(target=handle_client.....)->스레드 생성 후 handle_client 실행
+
+def start_client():
+
+    my_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        my_socket.connect((HOST, PORT))
+    except Exception as e:
+        print(f"서버 연결 실패: {e}")
+        return
+
+    threading.Thread(target=listen_to_server, args=(my_socket,), daemon=True).start()
+
+
+AF_INET->IPv4 사용
+
+socket.SOCK_STREAM->TCP 사용
+
+my_socket.connect((HOST, PORT))->접속 시도
+
+threading.Thread(target=listen_to_server....)->스레드 생성 후 listen_to_server 실행
